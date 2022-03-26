@@ -10,6 +10,7 @@ const mongoSanitize = require('express-mongo-sanitize')
 const compression = require('compression')
 const toobusy = require('toobusy-js')
 const createErr = require('http-errors')
+const rateLimiter = require('./middlewares/rateLimiter')
 
 const app = express()
 
@@ -30,6 +31,7 @@ const urlEncoded = express.urlencoded
  */
 app.enable('trust proxy') // trust first proxy
 app.use(cors(corsOpt))
+app.use(rateLimiter)
 app.use(logger('dev'))
 app.use(json())
 app.use(urlEncoded({ extended: true }))
