@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "checkJs": true,
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "paths": {
+      "Controllers/*": [
+        "./controller/*"
+      ],
+      "Models/*": [
+        "./model/*"
+      ],
+      "Routrs/*": [
+        "./routes/*"
+      ],
+      "Utils/*": [
+        "./utils/*"
+      ],
+      "Templates/*": [
+        "./template/*"
+      ],
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
