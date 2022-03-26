@@ -3,6 +3,13 @@ const mongoose = require('mongoose')
 const moment = require('moment')
 const config = require('../configs/general.config')
 const tokenGenerator = require('../utils/tokenGenerator')
+const sgMail = require('@sendgrid/mail')
+const ejs = require('ejs')
+const path = require('path')
+const consola = require('consola')
+const mongoosePaginate = require('mongoose-paginate-v2')
+
+const cwd = process.cwd() // current working directory
 
 /**
  * @Schema
@@ -96,6 +103,40 @@ schema.pre('save', async function (next) {
   }
 })
 
+// ! send verify mail method function
+schema.methods.sentVerifyMail = async function () {
+  try {
+    // * read verifyMail.ejs template
+    const templateObj = {
+      verificationLink: `https://localhost:4000/api/applicant/verify/${this.verificationToken}`,
+      firstName: this.firstName,
+    }
+    const template = await ejs.renderFile(
+      path.join(cwd, 'templates', 'verifyMail.ejs'),
+      templateObj
+    )
+
+    // create mail obj
+    const reciver = this.email
+    const sender = config.founder
+    const msg = {
+      to: reciver,
+      from: sender, // Use the email address or domain you verified above
+      subject: 'Please Verify Your Email',
+      text: `Welcome to App4You.`,
+      html: template,
+    }
+
+    // * send mail
+    return await sgMail.send(msg)
+  } catch (err) {
+    // ! return error
+    consola.error(err.message)
+    if (err.response) return consola.error(err.response.body)
+    throw new Error(err)
+  }
+}
+
 // ! validate match password fucntion
 schema.methods.isMatchPassword = async function (input) {
   try {
@@ -107,7 +148,7 @@ schema.methods.isMatchPassword = async function (input) {
   }
 }
 
-// get full name
+// * get full name
 schema
   .virtual('fullName')
   .get(function () {
@@ -118,6 +159,8 @@ schema
     const lastName = v.substring(v.indexOf(' ') + 1)
     this.set({ firstName, lastName })
   })
+
+schema.plugin(mongoosePaginate)
 
 const Applicant = mongoose.model('Applicant', schema)
 
