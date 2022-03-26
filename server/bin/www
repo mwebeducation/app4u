@@ -35,6 +35,7 @@ const server = spdy.createServer(options, app)
 server.listen(port)
 server.on('error', onError)
 server.on('listening', onListening)
+server.on('listening', () => require('../configs/db.config'))
 
 /**
  * Normalize a port into a number, string, or false.
