@@ -1,0 +1,124 @@
+#!usr/bin/env node
+
+/**
+ *
+ *@Module dependencies
+ *
+ */
+
+const app = require('../app')
+const debug = require('debug')('express-generator-test:server')
+const spdy = require('spdy')
+const fs = require('fs')
+const path = require('path')
+const consola = require('consola')
+const mongoose = require('mongoose')
+const toobusy = require('toobusy-js')
+
+const cwd = process.cwd() // * current working directory
+const port = normalizePort(process.env.PORT || '3000')
+app.set('port', port)
+
+const options = {
+  key: fs.readFileSync(path.join(cwd, 'cert', 'localhost', 'private.key')),
+  cert: fs.readFileSync(path.join(cwd, 'cert', 'localhost', 'cert.pem')),
+  spdy: {
+    plain: false,
+    'x-forwarded-for': true,
+    protocols: ['h2', 'spdy/3.1', 'spdy/3', 'spdy/2', 'http/1.1', 'http/1.0'],
+  },
+}
+
+const server = spdy.createServer(options, app)
+
+server.listen(port)
+server.on('error', onError)
+server.on('listening', onListening)
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  let port = parseInt(val, 10)
+
+  if (isNaN(port)) {
+    // named pipe
+    return val
+  }
+
+  if (port >= 0) {
+    // port number
+    return port
+  }
+
+  return false
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error
+  }
+
+  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      consola.error(bind + ' requires elevated privileges')
+      return process.exit(1)
+    case 'EADDRINUSE':
+      consola.error(bind + ' is already in use')
+      return process.exit(1)
+    default:
+      throw error
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  const addr = server.address()
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
+  debug('Listening on ' + bind)
+  consola.success(`Server running on ${bind}`)
+}
+
+/**
+ * Process and event (shutdown and logerror)
+ */
+
+const logError = err => {
+  consola.error(err)
+}
+
+const shutDown = async () => {
+  try {
+    console.log('\n')
+    consola.info('Graceful Shutdown.')
+
+    toobusy.shutdown()
+
+    await mongoose.connection.close()
+    consola.info('MongoDB connection closed!')
+
+    server.close()
+    consola.info('Server closed!')
+
+    console.log('Bye. ✋️\n')
+    return process.exit(0) // exit with succssful code
+  } catch (err) {
+    consola.error(err.message)
+  }
+}
+
+process
+  .on('uncaughtException', err => logError(err))
+  .on('SIGTERM', shutDown)
+  .on('SIGINT', shutDown)
