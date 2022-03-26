@@ -2,15 +2,14 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "esnext",
-    "checkJs": true,
     "moduleResolution": "Node",
     "baseUrl": ".",
     "paths": {
       "Controllers/*": [
-        "./controller/*"
+        "./controllers/*"
       ],
       "Models/*": [
-        "./model/*"
+        "./models/*"
       ],
       "Routrs/*": [
         "./routes/*"
@@ -20,6 +19,9 @@
       ],
       "Templates/*": [
         "./template/*"
+      ],
+      "Configs/*": [
+        "./configs/*"
       ],
     }
   },

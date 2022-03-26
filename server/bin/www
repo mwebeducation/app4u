@@ -14,9 +14,10 @@ const path = require('path')
 const consola = require('consola')
 const mongoose = require('mongoose')
 const toobusy = require('toobusy-js')
+require('dotenv').config()
 
 const cwd = process.cwd() // * current working directory
-const port = normalizePort(process.env.PORT || '3000')
+const port = normalizePort(process.env.PORT || '4000')
 app.set('port', port)
 
 const options = {
