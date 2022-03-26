@@ -11,6 +11,7 @@ const compression = require('compression')
 const toobusy = require('toobusy-js')
 const createErr = require('http-errors')
 const rateLimiter = require('./utils/rateLimiter')
+const applicantRouter = require('./routers/applicant.router')
 
 const app = express()
 
@@ -42,6 +43,11 @@ app.use(compression())
 app.use(hpp())
 app.use(mongoSanitize())
 app.use(csurf({ cookie: true }))
+
+/**
+ * @Router api router
+ */
+app.use('/api/applicants', applicantRouter)
 
 /**
  * @Error section

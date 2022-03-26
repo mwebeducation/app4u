@@ -1,11 +1,15 @@
 const bcrypt = require('bcrypt')
-const mongoose = require('bcrypt')
+const mongoose = require('mongoose')
 const moment = require('moment')
 const config = require('../configs/general.config')
+const tokenGenerator = require('../utils/tokenGenerator')
+
 /**
  * @Schema
  */
-const schema = new mongoose.Schema(
+const Schema = mongoose.Schema
+
+const schema = new Schema(
   {
     firstName: {
       type: String,
@@ -84,7 +88,7 @@ schema.pre('save', async function (next) {
     this.password = await bcrypt.hash(finalHash, salt)
 
     // * generate verification token
-    // this.verificationToken = tokenGenerator();
+    this.verificationToken = tokenGenerator()
 
     return next()
   } catch (err) {
