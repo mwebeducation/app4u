@@ -1,4 +1,18 @@
 {
+  "name": "server",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": "git@github.com:mwebeducation/app4u.git",
+  "author": "Min Kaung Kyaw",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./bin/www",
+    "nodemon": "node ../bin/www",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "lint:check": "eslint .",
+    "lint": "eslint --fix ."
+  },
   "dependencies": {
     "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
@@ -26,6 +40,9 @@
     "spdy": "^4.0.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "eslint": "^8.12.0",
+    "eslint-config-prettier": "^8.5.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.6.1"
   }
 }
