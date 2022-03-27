@@ -129,7 +129,7 @@ schema.methods.isMatchPassword = async function (input) {
 
 // ! get fullName from firstName and lastName
 schema
-  .virtual('fullName')
+  .virtual('displayName')
   .get(function () {
     return `${this.firstName} ${this.lastName}`
   })

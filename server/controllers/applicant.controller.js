@@ -139,6 +139,9 @@ const applicantById = asyncHandler(async (req, res, next) => {
           id: applicant.id,
         },
         applicant,
+        links: {
+          self: `https://localhost:8000/api/applicants/${applicant.id}`,
+        },
       },
     })
   } catch (err) {

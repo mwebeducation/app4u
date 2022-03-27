@@ -4,7 +4,7 @@ const createHttpErr = require('http-errors')
 const mongoose = require('mongoose')
 
 /**
- * @Controller get all applicants
+ * @Controller get all users
  * only admin or founder can request this service
  */
 const getAllUsers = asyncHandler(async (req, res, next) => {
@@ -12,7 +12,7 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
     // todo: validate req param (pagination)
 
     // ? find applicant from db
-    const applicants = await User.paginate()
+    const users = await User.paginate()
 
     const {
       totalDocs,
@@ -26,7 +26,7 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
       prevPage,
       nextPage,
       pagingCounter,
-    } = applicants
+    } = users
 
     // * return data
     if (totalDocs < 1)
@@ -54,7 +54,7 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
           nextPage,
           pagingCounter,
         },
-        applicants: docs,
+        users: docs,
         links: {
           self: 'https://localhost:8000/api/users',
         },
@@ -66,6 +66,34 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
   }
 })
 
+/**
+ * @Controller get all users
+ * can request logined user, admin or founder
+ */
+const getById = asyncHandler(async (req, res, next) => {
+  try {
+    // find user and return data
+    const id = req.params.id
+    const user = await User.findById(id).exec()
+
+    // * return user data
+    return res.status(200).json({
+      data: {
+        meta: {
+          id: user.id,
+        },
+        user,
+        links: {
+          self: `https://localhost:8000/api/users/${id}`,
+        },
+      },
+    })
+  } catch (err) {
+    return next(err)
+  }
+})
+
 module.exports = {
   getAllUsers,
+  getById,
 }
