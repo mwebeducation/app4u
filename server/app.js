@@ -13,6 +13,7 @@ const createErr = require('http-errors')
 const rateLimiter = require('./utils/rateLimiter')
 const applicantRouter = require('./routers/applicant.router')
 const userRouter = require('./routers/user.router')
+const authRouter = require('./routers/auth.router')
 
 const app = express()
 
@@ -43,7 +44,14 @@ app.use(helmet())
 app.use(compression())
 app.use(hpp())
 app.use(mongoSanitize())
-app.use(csurf({ cookie: true }))
+app.use(
+  csurf({
+    cookie: {
+      expires: 1000 * 59 * 59,
+      secure: true,
+    },
+  })
+)
 
 /**
  * @Router api router
@@ -57,6 +65,8 @@ app.get('/csrf_token', (req, res) => {
     },
   })
 })
+
+app.use('/api/auth', authRouter) // * auth (login, logout) route
 
 app.use('/api/applicants', applicantRouter) // * applicants route
 

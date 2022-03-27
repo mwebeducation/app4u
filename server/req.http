@@ -12,9 +12,9 @@ csrf-token: hz5mZSXc-dM3MmHehn2b-0MUXl5hhDnlhXT0
 {
   "firstName": "Min Kg",
   "lastName": "Kyaw",
-  "email": "kylesinlynn@gmail.com",
-  "password": "ksl123",
-  "confirmPassword": "ksl123",
+  "email": "mwebeducationchannel@gmail.com",
+  "password": "mkk123",
+  "confirmPassword": "mkk123",
   "gender": "Male",
   "role": "Developer"
 }
@@ -36,6 +36,17 @@ csrf-token: hz5mZSXc-dM3MmHehn2b-0MUXl5hhDnlhXT0
 
 ### verify applicant
 GET https://localhost:8000/api/applicants/verify?verificationToken=4769980bb25837fbd0f140d7c31aa4d8
+
+### login (auth)
+POST https://localhost:8000/api/auth/login
+User-Agent: Min Kg Kyaw
+Content-Type: application/json
+csrf-token: YjEBBpC8-oVV1ufmrKNVGXbUgmmrVVDF9ngU
+
+{
+  "email": "mwebeducationchannel@gmail.com",
+  "password": "mkk123"
+}
 
 ### get all users
 GET https://localhost:8000/api/users
