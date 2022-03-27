@@ -1,7 +1,8 @@
 const User = require('../models/User.model')
 const asyncHandler = require('express-async-handler')
-const createHttpErr = require('http-errors')
-const mongoose = require('mongoose')
+const joiValidator = require('../utils/joi.validator')
+const createHttpError = require('http-errors')
+// const createHttpErr = require('http-errors')
 
 /**
  * @Controller get all users
@@ -93,7 +94,52 @@ const getById = asyncHandler(async (req, res, next) => {
   }
 })
 
+/**
+ * @Controller update user email
+ * can request logined user
+ */
+
+/**
+ * @Controller update user password
+ * can request logined user
+ */
+const updatePassword = asyncHandler(async (req, res, next) => {
+  try {
+    // validate by joi
+    const info = req.body
+    await joiValidator.passwordValidtor.validateAsync(info)
+
+    // find user
+    const user = await User.findById(req.params.id)
+
+    // check old password is correct
+    const isMatchPassword = await user.isMatchPassword(info.oldPassword)
+
+    if (!isMatchPassword) return next(createHttpError(403, 'Incorrect password!'))
+
+    // update password
+    const updatedUser = await user.update({ passowrd: info.newPassword })
+
+    if (!updatedUser) return next(createHttpError(409, "Can't update password"))
+
+    return res.status(200).json({
+      data: {
+        meata: {
+          message: 'Successfully updated your new password',
+        },
+        links: {
+          self: `https://localhost:8000/api/users/update_password/${req.parmas.id}`,
+          user: `https://localhost:8000/api/users/${req.params.id}`,
+        },
+      },
+    })
+  } catch (err) {
+    return next(err)
+  }
+})
+
 module.exports = {
   getAllUsers,
   getById,
+  updatePassword,
 }

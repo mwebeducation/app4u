@@ -21,4 +21,10 @@ module.exports = {
   vierifyToken: joi.object().keys({
     verificationToken: joi.string().min(30).max(35).hex().required(),
   }),
+  // ? valitae POST : user password
+  passwordValidtor: joi.object().keys({
+    oldPassword: joi.string().min(6).max(30).required(),
+    newPassword: joi.string().min(6).max(30).required(),
+    confirmNewPassword: joi.string().min(6).max(30).required().valid(joi.ref('newPassword')),
+  }),
 }

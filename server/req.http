@@ -10,11 +10,11 @@ Content-Type: application/json
 csrf-token: hz5mZSXc-dM3MmHehn2b-0MUXl5hhDnlhXT0
 
 {
-  "firstName": "Min Kaung",
+  "firstName": "Min Kg",
   "lastName": "Kyaw",
-  "email": "mwebeducationchannel@gmail.com",
-  "password": "mkk123",
-  "confirmPassword": "mkk123",
+  "email": "kylesinlynn@gmail.com",
+  "password": "ksl123",
+  "confirmPassword": "ksl123",
   "gender": "Male",
   "role": "Developer"
 }
@@ -35,4 +35,10 @@ User-Agent: Min Kg Kyaw
 csrf-token: hz5mZSXc-dM3MmHehn2b-0MUXl5hhDnlhXT0
 
 ### verify applicant
-GET https://localhost:8000/api/applicants/verify?verificationToken=7f608754e163e77782a91f89f77a8b31
+GET https://localhost:8000/api/applicants/verify?verificationToken=4769980bb25837fbd0f140d7c31aa4d8
+
+### get all users
+GET https://localhost:8000/api/users
+
+### get user by id
+GET https://localhost:8000/api/users/623ff46114168d06bc227b6b

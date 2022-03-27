@@ -82,6 +82,23 @@ const schema = new Schema(
   }
 )
 
+// update password if fid by id and update
+schema.pre('update', async function (next) {
+  try {
+    const user = this
+    if (user.isModified('password')) {
+      const salt = await bcrypt.genSalt(config.saltLength)
+      const preHash = await bcrypt.hash(user.password, salt)
+      const finalHash = await bcrypt.hash(preHash, salt)
+      user.password = await bcrypt.hash(finalHash, salt)
+      return next()
+    }
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+})
+
 // ! send welcome email
 schema.post('save', async (doc, next) => {
   try {

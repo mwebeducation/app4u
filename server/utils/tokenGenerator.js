@@ -26,7 +26,7 @@ const tokenGenerator = () => {
     randomString += characters.charAt(Math.floor(Math.random() * charactersLength))
   }
 
-  const randomNumbers = randomBytes(randomNo).toString('hex')
+  const randomNumbers = randomBytes(randomNo).toString('utf-8')
 
   const hashString1 = createHmac(algo1, randomString).update(randomNumbers).digest(digest1)
 
