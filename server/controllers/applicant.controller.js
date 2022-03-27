@@ -47,12 +47,19 @@ const createNewApplicant = asyncHandler(async (req, res, next) => {
     // ? validate req body
     const info = await joiValidator.register.validateAsync(req.body)
 
+    // todo ? find req email is existed in user
+
+    // todo ! if exist, return 400 error
+
     // * save user to db
     const newApplicant = new Applicant(info)
     const savedApplicant = await newApplicant.save()
 
     // ! return if error
     if (!savedApplicant) return next(createHttpError(409))
+
+    // if applicant is saved, send verification mail
+    await savedApplicant.sentVerifyMail()
 
     // * return success messge
     return res

@@ -47,6 +47,15 @@ app.use(csurf({ cookie: true }))
 /**
  * @Router api router
  */
+
+app.get('/csrf_token', (req, res) => {
+  return res.status(200).json({
+    data: {
+      token: req.csrfToken(),
+    },
+  })
+})
+
 app.use('/api/applicants', applicantRouter)
 
 /**
