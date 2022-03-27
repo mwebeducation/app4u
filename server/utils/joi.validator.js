@@ -19,12 +19,17 @@ module.exports = {
   }),
   // ? validate GET : verify applicant by token
   vierifyToken: joi.object().keys({
-    verificationToken: joi.string().min(30).max(35).hex().required(),
+    verificationToken: joi.string().hex().required(),
   }),
   // ? valitae POST : user password
   passwordValidtor: joi.object().keys({
     oldPassword: joi.string().min(6).max(30).required(),
     newPassword: joi.string().min(6).max(30).required(),
     confirmNewPassword: joi.string().min(6).max(30).required().valid(joi.ref('newPassword')),
+  }),
+  // ? validate POST: login user
+  login: joi.object().keys({
+    email: joi.string().email().lowercase().trim().required(),
+    password: joi.string().min(6).max(30).required(),
   }),
 }

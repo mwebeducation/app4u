@@ -17,13 +17,12 @@ const {
 const { randomBytes, createHmac, createHash } = require('crypto')
 const consola = require('consola')
 
-const tokenGenerator = () => {
+const generator = () => {
   let randomString = ''
   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   const length = characters.length
-  var charactersLength = characters.length
   for (let i = 0; i < length; i++) {
-    randomString += characters.charAt(Math.floor(Math.random() * charactersLength))
+    randomString += characters.charAt(Math.floor(Math.random() * length))
   }
 
   const randomNumbers = randomBytes(randomNo).toString('utf-8')
@@ -44,8 +43,25 @@ const tokenGenerator = () => {
 
   const finalResult = createHash(algo5).update(hashString7).digest(digest1)
 
-  consola.info('Token ==> ', finalResult)
   return finalResult
+}
+
+const tokenGenerator = () => {
+  const token1 = generator()
+  const token2 = generator()
+
+  let hashedString = ''
+
+  const length = token1.length + token2.length
+
+  const characters = token1 + token2
+
+  for (let i = 0; i < length; i++) {
+    hashedString += characters.charAt(Math.floor(Math.random() * length))
+  }
+
+  consola.info('Token ==> ', hashedString)
+  return hashedString
 }
 
 module.exports = tokenGenerator

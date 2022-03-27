@@ -7,6 +7,8 @@ const ejs = require('ejs')
 const consola = require('consola')
 const path = require('path')
 const mongoosePaginate = require('mongoose-paginate-v2')
+const fs = require('fs')
+const jwt = require('jsonwebtoken')
 
 // * important
 const cwd = process.cwd() // current working dir
@@ -142,6 +144,23 @@ schema.methods.isMatchPassword = async function (input) {
   } catch (err) {
     return Error(err)
   }
+}
+
+// ! generate jwt token
+schema.methods.generateJwtToken = function () {
+  const privateKey = fs.readFileSync(path.join(cwd, 'cert', 'jwt', 'jwt.pem'))
+
+  const user = this
+
+  const payloads = {
+    email: user.email,
+    id: user.id,
+    role: user.role,
+  }
+
+  const options = { algorithm: 'PS256', expiresIn: '365d' }
+
+  return jwt.sign(payloads, privateKey, options)
 }
 
 // ! get fullName from firstName and lastName

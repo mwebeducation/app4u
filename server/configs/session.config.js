@@ -11,7 +11,8 @@ const sessionMiddleware = session({
   secret,
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true },
+  cookie: { secure: true, expires: 1000 * 59 * 59, maxAge: 1000 * 59 * 59 },
+  proxy: true,
 })
 
 module.exports = sessionMiddleware
