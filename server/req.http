@@ -1,11 +1,43 @@
-### Testing
-GET https://localhost:8000/ HTTP/1.1
+### get CSRF token
+GET https://localhost:8000/csrf_token HTTP/1.1
 User-Agent: Min Kg Kyaw
 Content-Type: application/json
 
 ### Applicants
 
+# post applicants
+POST https://localhost:8000/api/applicants HTTP/1.1
+User-Agent: Min Kaung Kyaw
+Content-Type: application/json
+csrf-token: hz5mZSXc-dM3MmHehn2b-0MUXl5hhDnlhXT0
+
+{
+  "firstName": "Min Kaung",
+  "lastName": "Kyaw",
+  "email": "mwebeducationchannel@gmail.com",
+  "password": "mkk123",
+  "confirmPassword": "mkk123",
+  "gender": "Male",
+  "role": "Developer"
+}
+
+###
+
 # get applicants
 GET https://localhost:8000/api/applicants HTTP/1.1
 User-Agent: Min Kg Kyaw
 Content-Type: application/json
+
+###
+
+# get applicant by id 
+GET https://localhost:8000/api/applicants/623fd764ec825930c09d9aa5 HTTP/1.1
+User-Agent: Min Kg Kyaw 
+Content-Type: application/json
+
+###
+
+# delete applicant by id 
+DELETE https://localhost:8000/api/applicants/623fe1a591c4b9b446233faa HTTP/1.1
+User-Agent: Min Kg Kyaw
+csrf-token: hz5mZSXc-dM3MmHehn2b-0MUXl5hhDnlhXT0

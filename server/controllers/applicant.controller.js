@@ -26,15 +26,14 @@ const getAllApplicants = asyncHandler(async (req, res, next) => {
       prevPage,
       nextPage,
       pagingCounter,
-      meta,
     } = applicants
 
     // * return data
-    if (applicants.totalDocs < 1)
+    if (totalDocs < 1)
       return res.status(200).json({
         data: {
           meta: {
-            total: applicants.totalDocs,
+            total: totalDocs,
             message: 'No Applicants',
           },
         },
@@ -55,7 +54,7 @@ const getAllApplicants = asyncHandler(async (req, res, next) => {
           nextPage,
           pagingCounter,
         },
-        applicants: applicants.docs,
+        applicants: docs,
         links: {
           self: 'https://localhost:8000/api/applicants',
         },
@@ -123,7 +122,7 @@ const applicantById = asyncHandler(async (req, res, next) => {
     const isMongoId = await mongoose.Types.ObjectId.isValid(id)
 
     // ! if id is not mongo id , return 422 error
-    if (!isMongoId) return next(createHttpError(422, 'Invalid ID!'))
+    if (!isMongoId) return next(createHttpError(404))
 
     // ? find applicant is existed
     const applicant = await Applicant.findById(id)
@@ -145,8 +144,42 @@ const applicantById = asyncHandler(async (req, res, next) => {
   }
 })
 
+/**
+ * @Controller delete applicant by id
+ */
+const deleteApplicant = asyncHandler(async (req, res, next) => {
+  try {
+    // ? validate req id is mongo id
+    const id = req.params.id
+    const isMongoId = await mongoose.Types.ObjectId.isValid(id)
+
+    // ! if id is not mongo id , return 422 error
+    if (!isMongoId) return next(createHttpError(404))
+
+    // ? find and delte applicant is existed
+    const applicant = await Applicant.findByIdAndDelete(id)
+
+    // ! if not exist, return 404 error
+    if (!applicant) return next(createHttpError(404))
+
+    return res.status(200).json({
+      data: {
+        meta: {
+          message: 'Successfully deleted',
+        },
+        links: {
+          self: `https://localhost:8000/api/applicants/${applicant.id}`,
+        },
+      },
+    })
+  } catch (err) {
+    return next(err)
+  }
+})
+
 module.exports = {
   getAllApplicants,
   createNewApplicant,
   applicantById,
+  deleteApplicant,
 }
