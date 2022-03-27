@@ -48,6 +48,17 @@ csrf-token: YjEBBpC8-oVV1ufmrKNVGXbUgmmrVVDF9ngU
   "password": "mkk123"
 }
 
+### login (auth)
+POST https://localhost:8000/api/auth/login
+User-Agent: Min Kg Kyaw
+Content-Type: application/json
+csrf-token: YjEBBpC8-oVV1ufmrKNVGXbUgmmrVVDF9ngU
+
+{
+  "email": "mwebeducationchannel@gmail.com",
+  "password": "mkk123"
+}
+
 ### get all users
 GET https://localhost:8000/api/users
 
