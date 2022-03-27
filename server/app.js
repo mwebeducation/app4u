@@ -12,6 +12,7 @@ const toobusy = require('toobusy-js')
 const createErr = require('http-errors')
 const rateLimiter = require('./utils/rateLimiter')
 const applicantRouter = require('./routers/applicant.router')
+const userRouter = require('./routers/user.router')
 
 const app = express()
 
@@ -49,6 +50,7 @@ app.use(csurf({ cookie: true }))
  */
 
 app.get('/csrf_token', (req, res) => {
+  // * csrf token route
   return res.status(200).json({
     data: {
       token: req.csrfToken(),
@@ -56,7 +58,9 @@ app.get('/csrf_token', (req, res) => {
   })
 })
 
-app.use('/api/applicants', applicantRouter)
+app.use('/api/applicants', applicantRouter) // * applicants route
+
+app.use('/api/users', userRouter) // * users route
 
 /**
  * @Error section
