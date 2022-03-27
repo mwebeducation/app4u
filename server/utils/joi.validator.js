@@ -17,4 +17,8 @@ module.exports = {
     gender: joi.string().valid('Male', 'Female').required(),
     role: joi.string().valid('User', 'Developer', 'Admin').required(),
   }),
+  // ? validate GET : verify applicant by token
+  vierifyToken: joi.object().keys({
+    verificationToken: joi.string().min(30).max(35).hex().required(),
+  }),
 }

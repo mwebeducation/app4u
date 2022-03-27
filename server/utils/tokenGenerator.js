@@ -44,8 +44,6 @@ const tokenGenerator = () => {
 
   const finalResult = createHash(algo5).update(hashString7).digest(digest1)
 
-  consola.info('Token ==>', finalResult)
-
   consola.info('Token ==> ', finalResult)
   return finalResult
 }

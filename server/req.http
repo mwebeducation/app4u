@@ -3,9 +3,7 @@ GET https://localhost:8000/csrf_token HTTP/1.1
 User-Agent: Min Kg Kyaw
 Content-Type: application/json
 
-### Applicants
-
-# post applicants
+###  post applicants
 POST https://localhost:8000/api/applicants HTTP/1.1
 User-Agent: Min Kaung Kyaw
 Content-Type: application/json
@@ -21,23 +19,20 @@ csrf-token: hz5mZSXc-dM3MmHehn2b-0MUXl5hhDnlhXT0
   "role": "Developer"
 }
 
-###
-
-# get applicants
+### get applicants
 GET https://localhost:8000/api/applicants HTTP/1.1
 User-Agent: Min Kg Kyaw
 Content-Type: application/json
 
-###
-
-# get applicant by id 
-GET https://localhost:8000/api/applicants/623fd764ec825930c09d9aa5 HTTP/1.1
+### get applicant by id 
+GET https://localhost:8000/api/applicants/623fee9c61fc55285ad0f13a HTTP/1.1
 User-Agent: Min Kg Kyaw 
 Content-Type: application/json
 
-###
-
-# delete applicant by id 
+### delete applicant by id 
 DELETE https://localhost:8000/api/applicants/623fe1a591c4b9b446233faa HTTP/1.1
 User-Agent: Min Kg Kyaw
 csrf-token: hz5mZSXc-dM3MmHehn2b-0MUXl5hhDnlhXT0
+
+### verify applicant
+GET https://localhost:8000/api/applicants/verify?verificationToken=7f608754e163e77782a91f89f77a8b31

@@ -141,4 +141,6 @@ schema
 
 schema.plugin(mongoosePaginate)
 
-export const User = mongoose.model('User', schema)
+const User = mongoose.model('User', schema)
+
+module.exports = User

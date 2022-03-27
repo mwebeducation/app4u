@@ -179,9 +179,79 @@ const deleteApplicant = asyncHandler(async (req, res, next) => {
   }
 })
 
+/**
+ * @Controller verify applicant and save user
+ */
+const verifyUser = asyncHandler(async (req, res, next) => {
+  try {
+    // ? joi validate token
+    const verificationToken = req.query
+
+    await joiValidator.vierifyToken.validateAsync(verificationToken)
+
+    // ? find applicant by token
+    const applicant = await Applicant.findOne(verificationToken)
+
+    // ! return 404 error if not found
+    if (!applicant) return next(createHttpError(404, 'no users found'))
+
+    // ? check token exp time
+    const currentTime = Date.now()
+    const canVerify = applicant.tokenExpTimes >= currentTime
+
+    // ! return error and delete applicant if time is expired
+    if (!canVerify) {
+      await applicant.delete()
+      return next(createHttpError(404))
+    }
+
+    const { firstName, lastName, email, password, gender, role, avatar } = applicant
+
+    // ? check user is existed or not
+    const isExistedUser = await User.findOne({ email })
+
+    // ! if existed, return 400 error
+    if (isExistedUser) {
+      await applicant.delete()
+      return next(createHttpError(400, 'User already existed!'))
+    }
+
+    // * upgrade applicant to user (save applicant to user)
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password,
+      gender,
+      role,
+      avatar,
+    })
+    const saveUser = await newUser.save()
+
+    // ! if can't update, return 500 error
+    if (!saveUser) return next(createHttpError(500))
+
+    // todo ? if success, dlete applicant and send response
+    res.status(200).json({
+      meta: {
+        message: 'Successfully verified',
+      },
+      links: {
+        self: `https://localhost:8000/api/applicants/verificationToken/${applicant.verificationToken}`,
+        user: `https://localhost:8000/api/users/${saveUser.id}`,
+      },
+    })
+    return await applicant.delete()
+  } catch (err) {
+    if (err.isJoi) err.status = 422
+    return next(err)
+  }
+})
+
 module.exports = {
   getAllApplicants,
   createNewApplicant,
   applicantById,
   deleteApplicant,
+  verifyUser,
 }
