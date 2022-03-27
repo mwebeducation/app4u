@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler')
 const createHttpError = require('http-errors')
 const joiValidator = require('../utils/joi.validator')
 const mongoose = require('mongoose')
+const User = require('../models/User.model')
 
 /**
  * @Controller get all applicants
@@ -74,9 +75,11 @@ const createNewApplicant = asyncHandler(async (req, res, next) => {
     // ? validate req body
     const info = await joiValidator.register.validateAsync(req.body)
 
-    // todo ? find req email is existed in user
+    // ? find req email is existed in user
+    const isExistedUser = await User.findOne({ email: info.email })
 
-    // todo ! if exist, return 400 error
+    // ! if exist, return 400 error
+    if (isExistedUser) return next(createHttpError(400, 'User already existed with that mail!'))
 
     // * save user to db
     const newApplicant = new Applicant(info)
@@ -85,11 +88,10 @@ const createNewApplicant = asyncHandler(async (req, res, next) => {
     // ! return if error
     if (!savedApplicant) return next(createHttpError(409))
 
-    // if applicant is saved, send verification mail
+    // * if applicant is saved, send verification mail
     await savedApplicant.sentVerifyMail()
 
     // * return success messge
-
     return res
       .status(201)
       .json({
