@@ -2,6 +2,7 @@ const Applicant = require('../models/Applicant.model')
 const asyncHandler = require('express-async-handler')
 const createHttpError = require('http-errors')
 const joiValidator = require('../utils/joi.validator')
+const mongoose = require('mongoose')
 
 /**
  * @Controller get all applicants
@@ -11,14 +12,29 @@ const getAllApplicants = asyncHandler(async (req, res, next) => {
     // todo: validate req param (pagination)
 
     // ? find applicant from db
-    const applicants = await Applicant.find()
+    const applicants = await Applicant.paginate()
+
+    const {
+      totalDocs,
+      docs,
+      limit,
+      hasPrevPage,
+      hasNextPage,
+      page,
+      totalPages,
+      offset,
+      prevPage,
+      nextPage,
+      pagingCounter,
+      meta,
+    } = applicants
 
     // * return data
-    if (applicants.length < 1)
+    if (applicants.totalDocs < 1)
       return res.status(200).json({
         data: {
           meta: {
-            length: applicants.length,
+            total: applicants.totalDocs,
             message: 'No Applicants',
           },
         },
@@ -28,9 +44,21 @@ const getAllApplicants = asyncHandler(async (req, res, next) => {
     return res.status(200).json({
       data: {
         meta: {
-          length: applicants.length,
+          total: totalDocs,
+          limit,
+          hasPrevPage,
+          hasNextPage,
+          page,
+          totalPages,
+          offset,
+          prevPage,
+          nextPage,
+          pagingCounter,
         },
-        applicants: [applicants],
+        applicants: applicants.docs,
+        links: {
+          self: 'https://localhost:8000/api/applicants',
+        },
       },
     })
   } catch (err) {
@@ -62,6 +90,7 @@ const createNewApplicant = asyncHandler(async (req, res, next) => {
     await savedApplicant.sentVerifyMail()
 
     // * return success messge
+
     return res
       .status(201)
       .json({
@@ -69,6 +98,11 @@ const createNewApplicant = asyncHandler(async (req, res, next) => {
           meta: {
             id: savedApplicant.id,
             message: 'Please verify your email',
+          },
+          links: {
+            self: 'https://localhost:8000/api/applicants',
+            applicants: 'https://localhost:8000/api/applicants',
+            applicant: `https://localhost:8000/api/applicants/${savedApplicant.id}`,
           },
         },
       })
@@ -79,7 +113,40 @@ const createNewApplicant = asyncHandler(async (req, res, next) => {
   }
 })
 
+/**
+ * @Controller get applicant by id
+ */
+const applicantById = asyncHandler(async (req, res, next) => {
+  try {
+    // ? validate req id is mongo id
+    const id = req.params.id
+    const isMongoId = await mongoose.Types.ObjectId.isValid(id)
+
+    // ! if id is not mongo id , return 422 error
+    if (!isMongoId) return next(createHttpError(422, 'Invalid ID!'))
+
+    // ? find applicant is existed
+    const applicant = await Applicant.findById(id)
+
+    // ! if not exist, return 404 error
+    if (!applicant) return next(createHttpError(404))
+
+    // * return applicant data
+    return res.status(200).json({
+      data: {
+        meta: {
+          id: applicant.id,
+        },
+        applicant,
+      },
+    })
+  } catch (err) {
+    return next(err)
+  }
+})
+
 module.exports = {
   getAllApplicants,
   createNewApplicant,
+  applicantById,
 }

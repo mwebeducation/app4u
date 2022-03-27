@@ -76,7 +76,7 @@ const schema = new Schema(
         delete ret._id
         delete ret.password
         delete ret.verificationToken
-        delete ret.tokenExpTime
+        delete ret.tokenExpTimes
         delete ret.__v
         return ret
       },
