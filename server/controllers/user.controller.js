@@ -1,6 +1,5 @@
 const User = require('../models/User.model')
 const asyncHandler = require('express-async-handler')
-const joiValidator = require('../utils/joi.validator')
 const createHttpError = require('http-errors')
 
 /**
@@ -100,12 +99,10 @@ const getById = asyncHandler(async (req, res, next) => {
  */
 const updatePassword = asyncHandler(async (req, res, next) => {
   try {
-    // validate by joi
     const info = req.body
-    await joiValidator.passwordValidtor.validateAsync(info)
 
     // find user
-    const user = await User.findById(req.user.id)
+    const user = await User.findById(info.id)
 
     // check old password is correct
     const isMatchPassword = await user.isMatchPassword(info.oldPassword)
@@ -142,9 +139,6 @@ const updateEmail = asyncHandler(async (req, res, next) => {
     const id = req.user.id
 
     const obj = req.body
-
-    // ? validate req body with joi
-    await joiValidator.newEmailValidator.validateAsync(obj)
 
     // ? find user by id
     const user = await User.findById(id)

@@ -53,7 +53,6 @@ app.use(
   })
 )
 app.use(passport.initialize())
-require('./configs/passport.config')
 
 /**
  * @Router api router

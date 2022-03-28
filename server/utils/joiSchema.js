@@ -37,4 +37,8 @@ module.exports = {
     email: joi.string().email().lowercase().trim().required(),
     password: joi.string().min(6).max(30).required(),
   }),
+  // ? validate POST: confirm password for action
+  confirmPassword: joi.object().keys({
+    password: joi.string().min(6).max(30).required(),
+  }),
 }

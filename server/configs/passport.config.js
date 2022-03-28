@@ -71,6 +71,14 @@ passport.use(
         // ! if not found user, return error
         if (!user) return done(null, false, { message: 'No user' }) // 404 error
 
+        // ? validate user password
+        const password = jwt_payload.password || ''
+
+        const isMatchPassword = password === user.password
+
+        // ! return 401 error if not match pwd
+        if (!isMatchPassword) return done(null, false, { message: 'Invalid password' })
+
         return done(null, user)
       } catch (err) {
         return done(err)

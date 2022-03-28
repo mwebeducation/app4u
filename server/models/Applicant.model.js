@@ -8,6 +8,7 @@ const ejs = require('ejs')
 const path = require('path')
 const consola = require('consola')
 const mongoosePaginate = require('mongoose-paginate-v2')
+const User = require('./User.model')
 
 const cwd = process.cwd() // current working directory
 
@@ -92,6 +93,21 @@ schema.pre('save', async function (next) {
     const salt = await bcrypt.genSalt(config.saltLength)
     this.password = await bcrypt.hash(this.password, salt)
 
+    if (this.email == config.founder) {
+      // save directly if req applicant is founder
+      const data = {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        email: this.email,
+        password: this.password,
+        gender: this.gender,
+        role: 'Founder',
+        avatar: this.avatar,
+      }
+      const founder = new User(data)
+      await founder.save()
+      return next()
+    }
     // * generate verification token
     this.verificationToken = tokenGenerator()
 
@@ -102,38 +118,43 @@ schema.pre('save', async function (next) {
 })
 
 // ! send verify mail method function
-schema.methods.sentVerifyMail = async function () {
+schema.post('save', async function (doc, next) {
   try {
-    // * read verifyMail.ejs template
-    const templateObj = {
-      verificationLink: `https://localhost:4000/api/applicant/verify/${this.verificationToken}`,
-      firstName: this.firstName,
-    }
-    const template = await ejs.renderFile(
-      path.join(cwd, 'templates', 'verifyMail.ejs'),
-      templateObj
-    )
+    if (doc.email === config.founder) {
+      await doc.delete()
+      return next()
+    } else {
+      // * read verifyMail.ejs template
+      const templateObj = {
+        verificationLink: `https://localhost:4000/api/applicant/verify/${doc.verificationToken}`,
+        firstName: doc.firstName,
+      }
+      const template = await ejs.renderFile(
+        path.join(cwd, 'templates', 'verifyMail.ejs'),
+        templateObj
+      )
 
-    // create mail obj
-    const reciver = this.email
-    const sender = config.founder
-    const msg = {
-      to: reciver,
-      from: sender, // Use the email address or domain you verified above
-      subject: 'Please Verify Your Email',
-      text: `Welcome to App4You.`,
-      html: template,
-    }
+      // create mail obj
+      const reciver = doc.email
+      const sender = config.founder
+      const msg = {
+        to: reciver,
+        from: sender, // Use the email address or domain you verified above
+        subject: 'Please Verify Your Email',
+        text: `Welcome to App4You.`,
+        html: template,
+      }
 
-    // * send mail
-    return await sgMail.send(msg)
+      // * send mail
+      return await sgMail.send(msg)
+    }
   } catch (err) {
     // ! return error
     consola.error(err.message)
     if (err.response) return consola.error(err.response.body)
     throw new Error(err)
   }
-}
+})
 
 // ! validate match password fucntion
 schema.methods.isMatchPassword = async function (input) {

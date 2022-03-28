@@ -1,9 +1,9 @@
 const Applicant = require('../models/Applicant.model')
 const asyncHandler = require('express-async-handler')
 const createHttpError = require('http-errors')
-const joiValidator = require('../utils/joi.validator')
 const mongoose = require('mongoose')
 const User = require('../models/User.model')
+const config = require('../configs/general.config')
 
 /**
  * @Controller get all applicants
@@ -72,44 +72,51 @@ const getAllApplicants = asyncHandler(async (req, res, next) => {
  */
 const createNewApplicant = asyncHandler(async (req, res, next) => {
   try {
-    // ? validate req body
-    const info = await joiValidator.register.validateAsync(req.body)
-
     // ? find req email is existed in user
-    const isExistedUser = await User.findOne({ email: info.email })
+    const isExistedUser = await User.findOne({ email: req.body.email })
 
     // ! if exist, return 400 error
     if (isExistedUser) return next(createHttpError(400, 'User already existed with that mail!'))
 
-    // * save user to db
-    const newApplicant = new Applicant(info)
+    // * save user to db and send verify message
+    const newApplicant = new Applicant(req.body)
     const savedApplicant = await newApplicant.save()
 
     // ! return if error
     if (!savedApplicant) return next(createHttpError(409))
 
-    // * if applicant is saved, send verification mail
-    await savedApplicant.sentVerifyMail()
-
     // * return success messge
-    return res
-      .status(201)
-      .json({
-        data: {
-          meta: {
-            id: savedApplicant.id,
-            message: 'Please verify your email',
-          },
-          links: {
-            self: 'https://localhost:8000/api/applicants',
-            applicants: 'https://localhost:8000/api/applicants',
-            applicant: `https://localhost:8000/api/applicants/${savedApplicant.id}`,
-          },
-        },
-      })
-      .end()
+    return savedApplicant.email === config.founder
+      ? res
+          .status(201)
+          .json({
+            data: {
+              meta: {
+                id: savedApplicant.id,
+                message: 'Welcome founder',
+              },
+              links: {
+                self: 'https://localhost:8000/api/applicants',
+              },
+            },
+          })
+          .end()
+      : res
+          .status(201)
+          .json({
+            data: {
+              meta: {
+                id: savedApplicant.id,
+                message: 'Please verify your email',
+              },
+              links: {
+                self: 'https://localhost:8000/api/applicants',
+                applicant: `https://localhost:8000/api/applicants/${savedApplicant.id}`,
+              },
+            },
+          })
+          .end()
   } catch (err) {
-    if (err.isJoi) err.status = 422
     return next(err)
   }
 })
@@ -190,8 +197,6 @@ const verifyUser = asyncHandler(async (req, res, next) => {
     // ? joi validate token
     const verificationToken = req.query
 
-    await joiValidator.vierifyToken.validateAsync(verificationToken)
-
     // ? find applicant by token
     const applicant = await Applicant.findOne(verificationToken)
 
@@ -246,7 +251,6 @@ const verifyUser = asyncHandler(async (req, res, next) => {
     })
     return await applicant.delete()
   } catch (err) {
-    if (err.isJoi) err.status = 422
     return next(err)
   }
 })

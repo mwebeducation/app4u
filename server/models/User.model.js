@@ -149,9 +149,9 @@ schema.methods.generateJwtToken = function () {
   const user = this
 
   const payloads = {
-    email: user.email,
     id: user.id,
     role: user.role,
+    password: user.password,
   }
 
   const options = { algorithm: config.jwtAlgorithm, expiresIn: '365d' }
