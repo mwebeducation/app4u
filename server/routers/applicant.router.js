@@ -1,12 +1,12 @@
 const express = require('express')
-const controller = require('../controllers/applicant.controller')
+const service = require('../controllers/applicant.controller')
 
 const router = express.Router()
 
-router.route('/').get(controller.getAllApplicants).post(controller.createNewApplicant)
+router.route('/').get(service.getAllApplicants).post(service.createNewApplicant)
 
-router.route('/verify').get(controller.verifyUser)
+router.route('/verify').get(service.verifyUser)
 
-router.route('/:id').get(controller.applicantById).delete(controller.deleteApplicant)
+router.route('/:id').get(service.applicantById).delete(service.deleteApplicant)
 
 module.exports = router

@@ -90,9 +90,7 @@ schema.pre('update', async function (next) {
     const user = this
     if (user.isModified('password')) {
       const salt = await bcrypt.genSalt(config.saltLength)
-      const preHash = await bcrypt.hash(user.password, salt)
-      const finalHash = await bcrypt.hash(preHash, salt)
-      user.password = await bcrypt.hash(finalHash, salt)
+      user.password = await bcrypt.hash(this.password, salt)
       return next()
     }
     return next()
@@ -138,9 +136,7 @@ schema.post('save', async (doc, next) => {
 // ! validate match password fucntion
 schema.methods.isMatchPassword = async function (input) {
   try {
-    const salt = await bcrypt.genSalt(config.saltLength)
-    const preHash = await bcrypt.hash(input, salt)
-    return await bcrypt.compare(preHash, this.password)
+    return await bcrypt.compare(input, this.password)
   } catch (err) {
     return Error(err)
   }
@@ -158,7 +154,7 @@ schema.methods.generateJwtToken = function () {
     role: user.role,
   }
 
-  const options = { algorithm: 'PS256', expiresIn: '365d' }
+  const options = { algorithm: config.jwtAlgorithm, expiresIn: '365d' }
 
   return jwt.sign(payloads, privateKey, options)
 }

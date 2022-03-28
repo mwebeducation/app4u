@@ -35,9 +35,9 @@ User-Agent: Min Kg Kyaw
 csrf-token: hz5mZSXc-dM3MmHehn2b-0MUXl5hhDnlhXT0
 
 ### verify applicant
-GET https://localhost:8000/api/applicants/verify?verificationToken=a97a1d22e545256c62ca8a925a3a9875056589f6da2a8575c0084c7f08485f9a
+GET https://localhost:8000/api/applicants/verify?verificationToken=ce5fa61f6bb23cc4bb2ea6c6c9a78b0fbe048a4aaf47e5eabea777fa1e999618
 
-### login (auth)
+### login (auth) true
 POST https://localhost:8000/api/auth/login
 User-Agent: Min Kg Kyaw
 Content-Type: application/json
@@ -48,14 +48,14 @@ csrf-token: YjEBBpC8-oVV1ufmrKNVGXbUgmmrVVDF9ngU
   "password": "mkk123"
 }
 
-### login (auth)
+### login (auth) false
 POST https://localhost:8000/api/auth/login
 User-Agent: Min Kg Kyaw
 Content-Type: application/json
 csrf-token: YjEBBpC8-oVV1ufmrKNVGXbUgmmrVVDF9ngU
 
 {
-  "email": "mwebeducationchannel@gmail.com",
+  "email": "mkk@gmail.com",
   "password": "mkk123"
 }
 
@@ -63,4 +63,5 @@ csrf-token: YjEBBpC8-oVV1ufmrKNVGXbUgmmrVVDF9ngU
 GET https://localhost:8000/api/users
 
 ### get user by id
-GET https://localhost:8000/api/users/623ff46114168d06bc227b6b
+GET https://localhost:8000/api/users/62414cb8acbfa46fd9eeaa61 
+Authorization: Bearer eyJhbGciOiJQUzUxMiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im13ZWJlZHVjYXRpb25jaGFubmVsQGdtYWlsLmNvbSIsImlkIjoiNjI0MTRjYjhhY2JmYTQ2ZmQ5ZWVhYTYxIiwicm9sZSI6IkRldmVsb3BlciIsImlhdCI6MTY0ODQ1MjY4OCwiZXhwIjoxNjc5OTg4Njg4fQ.upk4eagHEv-WqJsmlvxTc6pPhV8zrSYXjq-_CQ7y8Xagf_7E3Q0LwP1Ne_b-9hDT_d02rg_eUTETxE_uuIW_ExcimJV75XKa-qFVP3sA3pR4kg7hiTc0ZK0IF-QzazCSWv5tMO_pejW6H8VVCLztpgxJVJAfYz-1HNq1rkIiMvrLMsk7vOHScytw21I9riiTQxJz7hqT9rKJlc8H4JxuLIQ-ERY6J8w7p7kvBe5ZsY9uimOfYJBD0PTFwJxn_bjpEzrvP_f4tHEdAWgXkRGD7DflXK_mXejIgRSUPWfP9Ee5UlzO_8c8-Gx7lgtCAXUOvV6vv70dbOOkMQg85NVHtJm2zSJ4WTIpk_nL57iRHdxAxaPOlwVdqUgAKJHcaH4WFq6HpwINVTNl8lWuyKf1Z-AIrtTsPWQrpCttzPEC89wLBGODBnrrI88kgBGmA1AjqO3Wwpm7b-G2-ixCtkWCVGsfzoe9dIwCKTegQ42cwadAA9NldtgNc3s9SBLxowBrp1tvVYaD5u7RRX0IriLJwDvOkXQAcm9BXnTRwrcg6cZFZ9KzOYDywI2IGTuROgU1C_olrdmIz1OGMZcqfIfwOtywYtj2xVr3JeX83F-LK2C7QqluSAbV4mzIqUkofZ1dz8U5t2ZXbf8FSkYKhF7QK5t_iMm9GRNXvReBOJ9eGfA

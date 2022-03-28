@@ -2,7 +2,6 @@ const User = require('../models/User.model')
 const asyncHandler = require('express-async-handler')
 const joiValidator = require('../utils/joi.validator')
 const createHttpError = require('http-errors')
-// const createHttpErr = require('http-errors')
 
 /**
  * @Controller get all users
@@ -68,14 +67,15 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
 })
 
 /**
- * @Controller get all users
+ * @Controller get user by id
  * can request logined user, admin or founder
  */
 const getById = asyncHandler(async (req, res, next) => {
   try {
-    // find user and return data
+    // get user
     const id = req.params.id
-    const user = await User.findById(id).exec()
+
+    const user = await User.findById(id)
 
     // * return user data
     return res.status(200).json({
@@ -85,7 +85,7 @@ const getById = asyncHandler(async (req, res, next) => {
         },
         user,
         links: {
-          self: `https://localhost:8000/api/users/${id}`,
+          self: `https://localhost:8000/api/users/${user.id}`,
         },
       },
     })
@@ -93,11 +93,6 @@ const getById = asyncHandler(async (req, res, next) => {
     return next(err)
   }
 })
-
-/**
- * @Controller update user email
- * can request logined user
- */
 
 /**
  * @Controller update user password
@@ -110,7 +105,7 @@ const updatePassword = asyncHandler(async (req, res, next) => {
     await joiValidator.passwordValidtor.validateAsync(info)
 
     // find user
-    const user = await User.findById(req.params.id)
+    const user = await User.findById(req.user.id)
 
     // check old password is correct
     const isMatchPassword = await user.isMatchPassword(info.oldPassword)
@@ -128,8 +123,52 @@ const updatePassword = asyncHandler(async (req, res, next) => {
           message: 'Successfully updated your new password',
         },
         links: {
-          self: `https://localhost:8000/api/users/update_password/${req.parmas.id}`,
-          user: `https://localhost:8000/api/users/${req.params.id}`,
+          self: `https://localhost:8000/api/users/update_password`,
+          user: `https://localhost:8000/api/users/${req.user.id}`,
+        },
+      },
+    })
+  } catch (err) {
+    return next(err)
+  }
+})
+
+/**
+ * @Controller update user email
+ * con request only user
+ */
+const updateEmail = asyncHandler(async (req, res, next) => {
+  try {
+    const id = req.user.id
+
+    const obj = req.body
+
+    // ? validate req body with joi
+    await joiValidator.newEmailValidator.validateAsync(obj)
+
+    // ? find user by id
+    const user = await User.findById(id)
+
+    // ? validate password is match
+    const isMatchPassword = await user.isMatchPassword(obj.password)
+
+    // ! return 403 error, if not match password
+    if (!isMatchPassword) return next(createHttpError(403))
+
+    // * send response verify token
+    const verifyUpdateEmail = await user.verifyUpdateEmail(obj.newEmail)
+
+    if (!verifyUpdateEmail) return next(createHttpError(500))
+
+    return res.status(200).json({
+      data: {
+        meta: {
+          id: user.id,
+          message: `Please verify token we sent to ${user.email}`,
+        },
+        links: {
+          self: `https://localhost:8000/api/users/update_email`,
+          user: `https://localhost:8000/api/users/${req.user.id}`,
         },
       },
     })
@@ -142,4 +181,5 @@ module.exports = {
   getAllUsers,
   getById,
   updatePassword,
+  updateEmail,
 }

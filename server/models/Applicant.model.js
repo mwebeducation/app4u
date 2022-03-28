@@ -90,9 +90,7 @@ schema.pre('save', async function (next) {
     if (!this.isModified('password')) return next()
     // * generate salt
     const salt = await bcrypt.genSalt(config.saltLength)
-    const preHash = await bcrypt.hash(this.password, salt)
-    const finalHash = await bcrypt.hash(preHash, salt)
-    this.password = await bcrypt.hash(finalHash, salt)
+    this.password = await bcrypt.hash(this.password, salt)
 
     // * generate verification token
     this.verificationToken = tokenGenerator()

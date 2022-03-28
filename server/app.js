@@ -3,7 +3,6 @@ const cors = require('cors')
 const helmet = require('helmet')
 const logger = require('morgan')
 const hpp = require('hpp')
-const session = require('./configs/session.config')
 const cookieParser = require('cookie-parser')
 const csurf = require('csurf')
 const mongoSanitize = require('express-mongo-sanitize')
@@ -14,6 +13,7 @@ const rateLimiter = require('./utils/rateLimiter')
 const applicantRouter = require('./routers/applicant.router')
 const userRouter = require('./routers/user.router')
 const authRouter = require('./routers/auth.router')
+const passport = require('passport')
 
 const app = express()
 
@@ -38,7 +38,6 @@ app.use(rateLimiter)
 app.use(logger('dev'))
 app.use(json())
 app.use(urlEncoded({ extended: true }))
-app.use(session)
 app.use(cookieParser())
 app.use(helmet())
 app.use(compression())
@@ -47,11 +46,14 @@ app.use(mongoSanitize())
 app.use(
   csurf({
     cookie: {
-      expires: 1000 * 59 * 59,
+      expires: 86400000,
+      maxAge: 86400000,
       secure: true,
     },
   })
 )
+app.use(passport.initialize())
+require('./configs/passport.config')
 
 /**
  * @Router api router

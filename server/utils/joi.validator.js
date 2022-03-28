@@ -27,6 +27,11 @@ module.exports = {
     newPassword: joi.string().min(6).max(30).required(),
     confirmNewPassword: joi.string().min(6).max(30).required().valid(joi.ref('newPassword')),
   }),
+  // ? validate POST : user email
+  newEmailValidator: joi.object().keys({
+    newEmail: joi.string().email().trim().lowercase().required(),
+    password: joi.string().min(6).max(30).required(),
+  }),
   // ? validate POST: login user
   login: joi.object().keys({
     email: joi.string().email().lowercase().trim().required(),

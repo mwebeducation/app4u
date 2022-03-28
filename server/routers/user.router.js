@@ -1,10 +1,10 @@
 const express = require('express')
-const controller = require('../controllers/user.controller')
-
+const service = require('../controllers/user.controller')
+const authController = require('../controllers/auth.controller')
 const router = express.Router()
 
-router.route('/').get(controller.getAllUsers)
+router.route('/').get(service.getAllUsers)
 
-router.route('/:id').get(controller.getById)
+router.route('/:id').get(authController.autorizeOnlySpecificUser, service.getById)
 
 module.exports = router
